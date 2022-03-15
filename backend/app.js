@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const errorMiddleware = require("./middleware/error")
 
-// importing routes from controller
+// importing routes from routes
 const product = require('./routes/productRoute') 
 
 app.use(express.json())
