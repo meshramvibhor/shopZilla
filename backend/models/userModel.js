@@ -1,5 +1,8 @@
+const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const validator = require("validator");
+const crypto = require("crypto")
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -35,9 +38,49 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
 
-  resetPasswordToken:String,
-  resetPasswordExpire:Date,
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
 });
 
+//hashing password before saving
+userSchema.pre("save", async function (next) {
+  // this will work if password not modified
+  if (!this.isModified("password")) {
+    next();
+  }
 
-module.exports = mongoose.model("User", userSchema)
+  // this will work for initial password hashing and updating password
+  this.password = await bcryptjs.hash(this.password, 10);
+});
+
+//jwt token
+userSchema.methods.getJWTToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+};
+
+//compare password
+userSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcryptjs.compare(enteredPassword, this.password);
+};
+
+
+//reset Password Token
+userSchema.methods.getResetPasswordToken = function () {
+  //creating token
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  // adding resetPassword token to user schema
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+    this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+
+    return resetToken;
+};
+
+
+module.exports = mongoose.model("User", userSchema);
