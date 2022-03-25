@@ -3,6 +3,3 @@
 # dependencies
 node_modules
 backend/config/config.env
-.env.example
-.env.local
-.env.staging
