@@ -41,12 +41,12 @@ const Header = () => {
                 <div className='icons'>
                     <ul className='navbar-icons'>
                         <li>
-                            <Link className="navbar-iconItem" to="/"  >
+                            <Link className="navbar-iconItem" to="/search"  >
                                 <FaSearch />
                             </Link>
                         </li>
                         <li>
-                            <Link className="navbar-iconItem" to="/"  >
+                            <Link className="navbar-iconItem" to="/login"  >
                                 <FaIdBadge />
                             </Link>
                         </li>
